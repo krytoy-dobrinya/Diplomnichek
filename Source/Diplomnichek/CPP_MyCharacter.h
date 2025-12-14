@@ -14,7 +14,7 @@ class DIPLOMNICHEK_API ACPP_MyCharacter : public ACharacter
 public:
     ACPP_MyCharacter();
     
-    // Единственная функция движения
+    
     UFUNCTION(BlueprintCallable, Category = "Movement")
     void CPP_Move_func(FVector2D Direction);
 };
