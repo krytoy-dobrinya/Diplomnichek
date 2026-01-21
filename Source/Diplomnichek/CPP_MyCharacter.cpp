@@ -1,69 +1,44 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "CPP_MyCharacter.h"
+
+
 
 ACPP_MyCharacter::ACPP_MyCharacter()
 {
-    PrimaryActorTick.bCanEverTick = true;
+    PrimaryActorTick.bCanEverTick = true; // Включаем возможность вызывать Tick
 }
 
+
+// Вызов каждый кадр
 void ACPP_MyCharacter::Tick(float DeltaTime)
 {
-    Super::Tick(DeltaTime);
+    Super::Tick(DeltaTime); // Для корректной работы Tick
 
-    // Проверяем источники света каждый кадр
-    if (lighting_sources_counter <= 0)
-    {
-        // Если нет источников света и мы еще не умираем
-        if (!bDeathTimerActive)
-        {
-            CPP_StartDeathTimer();
-            bDeathTimerActive = true;
-        }
-    }
-    else
-    {
-        // Если есть источники света и таймер смерти активен
-        if (bDeathTimerActive)
-        {
-            CPP_StopDeathTimer();
-            bDeathTimerActive = false;
-        }
-    }
+    ApplyMovement(); // Каждый кадр смотрим изменение клавиш
 }
 
-void ACPP_MyCharacter::CPP_MoveFunc(FVector2D Direction)
-{
-    // Движение по осям X и Y
-    AddMovementInput(FVector(Direction.X, Direction.Y, 0.0f));
-}
 
-void ACPP_MyCharacter::CPP_StartDeathTimer()
+// Функция передвижения персонажа
+void ACPP_MyCharacter::ApplyMovement()
 {
-    if (!bDeathTimerActive)
-    {
-        bDeathTimerActive = true;
-        GetWorld()->GetTimerManager().SetTimer(DeathTimerHandle, this, &ACPP_MyCharacter::CPP_DeathTimerComplete, DeathDelay, false);
-        GEngine->AddOnScreenDebugMessage(-1, 4.0f, FColor::White, TEXT("Таймер запущен"));
-    }
+    // Вычисляем направление
+    float X = (bForward ? -1.0f : 0.0f) + (bBack ? 1.0f : 0.0f);
+    float Y = (bRight ? -1.0f : 0.0f) + (bLeft ? 1.0f : 0.0f);
     
-}
-
-void ACPP_MyCharacter::CPP_StopDeathTimer()
-{
-    if (bDeathTimerActive)
+    FVector Direction(X, Y, 0.0f);
+    
+    if (!Direction.IsZero())
     {
-        bDeathTimerActive = false;
-        GetWorld()->GetTimerManager().ClearTimer(DeathTimerHandle);
-        GEngine->AddOnScreenDebugMessage(-1, 4.0f, FColor::White, TEXT("Таймер остановлен"));
+        // Нормализация вектора (решает проблему скорости по диагонали)
+        Direction.Normalize();
+        AddMovementInput(Direction, 1.0f);
     }
-
 }
 
-void ACPP_MyCharacter::CPP_DeathTimerComplete()
-{
-    bDeathTimerActive = false;
-        GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, TEXT("ВЫ УМЕРЛИ"), true, FVector2D(10.0f, 10.0f)
-    );
-}
+
+// Функции вызова каждой клавиши
+void ACPP_MyCharacter::CPP_Forward(bool bPressed) {bForward = bPressed;}
+void ACPP_MyCharacter::CPP_Back(bool bPressed)    {bBack    = bPressed;}
+void ACPP_MyCharacter::CPP_Right(bool bPressed)   {bRight   = bPressed;}
+void ACPP_MyCharacter::CPP_Left(bool bPressed)    {bLeft    = bPressed;}
