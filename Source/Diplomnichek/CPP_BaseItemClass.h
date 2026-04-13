@@ -47,6 +47,4 @@ public:
     float CPP_Item_value;
     
     ACPP_BaseItemClass();
-
-    virtual void Tick(float DeltaTime) override;
 };
