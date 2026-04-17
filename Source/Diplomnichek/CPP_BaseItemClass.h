@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Engine/Texture2D.h"
 #include "CPP_BaseItemClass.generated.h"
 
 UENUM(BlueprintType)
@@ -35,16 +36,22 @@ public:
     int32 CPP_Max_stack_size;
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-    int32 CPP_Row_size;
+    float CPP_Width_size;
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-    int32 CPP_Col_size;
+    float CPP_Height_size;
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     ECPP_EquipSlotType CPP_Equip_slot_type;
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     float CPP_Item_value;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+    UTexture2D* CPP_Item_image;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+    UTexture2D* CPP_Item_active_image;
     
     ACPP_BaseItemClass();
 };
