@@ -36,12 +36,6 @@ public:
     int32 CPP_Max_stack_size;
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-    float CPP_Width_size;
-    
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-    float CPP_Height_size;
-    
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     ECPP_EquipSlotType CPP_Equip_slot_type;
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
@@ -49,9 +43,6 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     UTexture2D* CPP_Item_image;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-    UTexture2D* CPP_Item_active_image;
     
     ACPP_BaseItemClass();
 };
