@@ -31,6 +31,9 @@ public:
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     FText CPP_Item_description;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+    int32 CPP_stack_size;
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     int32 CPP_Max_stack_size;
