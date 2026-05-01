@@ -86,13 +86,13 @@ FString AGameTimeManager::GetTimeString() const
 FString AGameTimeManager::GetDayOfWeek() const
 {
     static const TArray<FString> DayNames = {
-        TEXT("\u041F\u043D"), // 享
-        TEXT("\u0412\u0442"), // 买
-        TEXT("\u0421\u0440"), // 佯
-        TEXT("\u0427\u0442"), // 昨
-        TEXT("\u041F\u0442"), // 向
-        TEXT("\u0421\u0431"), // 厌
-        TEXT("\u0412\u0441")  // 埋
+        TEXT("袩袧"), 
+        TEXT("袙孝"), 
+        TEXT("小袪"), 
+        TEXT("效孝"), 
+        TEXT("袩孝"),
+        TEXT("小袘"),
+        TEXT("袙小") 
     };
     return DayNames[(CurrentDay - 1) % 7];
 }
