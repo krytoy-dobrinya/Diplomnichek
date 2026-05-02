@@ -42,6 +42,9 @@ public:
     UPROPERTY(BlueprintAssignable, Category = "Time")
     FOnTimeUpdated OnTimeUpdated;
 
+    UPROPERTY(EditAnywhere, Category = "Time")
+    TSoftObjectPtr<AActor> SpawnPoint; // ссылка на Target Point
+
 protected:
     virtual void BeginPlay() override;
 
@@ -57,6 +60,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Time")
     void EndDayEarly();
 
+    UFUNCTION(BlueprintCallable, Category = "Time")
+    void StartNewDay();
+
     UFUNCTION(BlueprintPure, Category = "Time")
     FString GetTimeString() const;
     
@@ -71,5 +77,4 @@ private:
 
     void AdvanceTime(float DeltaTime);
     void EndDay();
-    void StartNewDay();
 };

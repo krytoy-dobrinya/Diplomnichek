@@ -57,12 +57,39 @@ void AGameTimeManager::EndDayEarly()
 void AGameTimeManager::EndDay()
 {
     StopTime();
-    OnDayEnded.Broadcast();
-    StartNewDay();
+
+    //Вот тут потом вставим все обновления растений
+
+    OnDayEnded.Broadcast(); // HUD показывает анимацию
+
+    // Запускаем таймер на 4 секунды, потом начинаем новый день
+    FTimerHandle TimerHandle;
+    GetWorld()->GetTimerManager().SetTimer(
+        TimerHandle,
+        this,
+        &AGameTimeManager::StartNewDay,
+        4.0f,
+        false
+    );
 }
 
 void AGameTimeManager::StartNewDay()
 {
+    // Телепортация игрока
+    if (!SpawnPoint.IsNull())
+    {
+        AActor* Spawn = SpawnPoint.LoadSynchronous();
+        if (Spawn)
+        {
+            APlayerController* PC = GetWorld()->GetFirstPlayerController();
+            if (PC && PC->GetPawn())
+            {
+                PC->GetPawn()->SetActorLocation(Spawn->GetActorLocation());
+                PC->GetPawn()->SetActorRotation(Spawn->GetActorRotation());
+            }
+        }
+    }
+
     if (++CurrentDay > 28)
     {
         CurrentDay = 1;
