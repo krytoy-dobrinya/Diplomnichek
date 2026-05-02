@@ -12,7 +12,6 @@ enum class ECPP_EquipSlotType : uint8
 {
     Hat         UMETA(DisplayName = "Hat"),
     Backpack    UMETA(DisplayName = "Backpack"),
-    Toolbar     UMETA(DisplayName = "Toolbar"),
     Simple      UMETA(DisplayName = "Simple")
 };
 
