@@ -28,4 +28,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     ECPP_ToolType CPP_Tool_type;
 
+    virtual bool UseItem_Implementation(AActor* User, FVector TargetLocation) override;
+
+    virtual bool IsUsableOnFarm() const override { return true; }
+
 };

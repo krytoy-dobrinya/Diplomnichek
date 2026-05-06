@@ -18,4 +18,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	int32 CPP_Plant_ID;
 
+	virtual bool UseItem_Implementation(AActor* User, FVector TargetLocation) override;
+
+	virtual bool IsUsableOnFarm() const override { return true; }
 };

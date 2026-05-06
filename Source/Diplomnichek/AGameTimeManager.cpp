@@ -1,4 +1,6 @@
 #include "AGameTimeManager.h"
+#include "AFarmingManager.h"
+#include "Kismet/GameplayStatics.h"
 
 AGameTimeManager::AGameTimeManager()
 {
@@ -58,7 +60,16 @@ void AGameTimeManager::EndDay()
 {
     StopTime();
 
-    //Вот тут потом вставим все обновления растений
+    // Обновление грядок
+    TArray<AActor*> Found;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AFarmingManager::StaticClass(), Found);
+    for (AActor* Actor : Found)
+    {
+        if (AFarmingManager* FM = Cast<AFarmingManager>(Actor))
+        {
+            FM->UpdateAllCellsAtEndOfDay();
+        }
+    }
 
     OnDayEnded.Broadcast(); // HUD показывает анимацию
 

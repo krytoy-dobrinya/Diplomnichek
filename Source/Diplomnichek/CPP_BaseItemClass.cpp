@@ -9,3 +9,7 @@ ACPP_BaseItemClass::ACPP_BaseItemClass()
 	PrimaryActorTick.bCanEverTick = false;
 }
 
+bool ACPP_BaseItemClass::UseItem_Implementation(AActor* User, FVector TargetLocation)
+{
+	return false;
+}

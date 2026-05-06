@@ -46,5 +46,12 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     UTexture2D* CPP_Item_image;
     
+    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Item")
+    bool UseItem(AActor* User, FVector TargetLocation);
+    virtual bool UseItem_Implementation(AActor* User, FVector TargetLocation);
+
+    UFUNCTION(BlueprintPure)
+    virtual bool IsUsableOnFarm() const { return false; }
+
     ACPP_BaseItemClass();
 };
