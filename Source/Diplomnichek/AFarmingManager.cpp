@@ -2,6 +2,7 @@
 #include "AGardenCell.h"
 #include "Engine/DataTable.h"
 #include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
 
 AFarmingManager::AFarmingManager()
 {
@@ -120,7 +121,7 @@ AGardenCell* AFarmingManager::TryPlantAtLocation(FVector WorldLocation, int32 Se
     {
         if (Row && Row->SeedItemID == SeedItemID)
         {
-            if (Cell->PlantSeed(SeedItemID, Row->DaysForSeed, Row->DaysForSprout))
+            if (Cell->PlantSeed(SeedItemID, Row->DaysForSeed, Row->DaysForSprout, CropDataTable))
                 return Cell;
         }
     }
@@ -156,4 +157,34 @@ void AFarmingManager::UpdateAllCellsAtEndOfDay()
             Cell->UpdateGrowthAtEndOfDay(CropDataTable);
         }
     }
+}
+
+bool AFarmingManager::IsLocationInGrid(FVector WorldLocation) const
+{
+    FVector LocalPos = WorldLocation - GridOrigin;
+    return LocalPos.X >= 0 && LocalPos.X <= MaxGridWidth * CellSize
+        && LocalPos.Y >= 0 && LocalPos.Y <= MaxGridHeight * CellSize;
+}
+
+AFarmingManager* AFarmingManager::GetClosestFarmingManager(UObject* WorldContext, FVector Location)
+{
+    TArray<AActor*> Found;
+    UGameplayStatics::GetAllActorsOfClass(WorldContext->GetWorld(), AFarmingManager::StaticClass(), Found);
+
+    AFarmingManager* Closest = nullptr;
+    float ClosestDist = FLT_MAX;
+    for (AActor* Actor : Found)
+    {
+        AFarmingManager* FM = Cast<AFarmingManager>(Actor);
+        if (FM && FM->IsLocationInGrid(Location))
+        {
+            float Dist = FVector::Dist(Location, FM->GetActorLocation());
+            if (Dist < ClosestDist)
+            {
+                ClosestDist = Dist;
+                Closest = FM;
+            }
+        }
+    }
+    return Closest;
 }

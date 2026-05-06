@@ -4,7 +4,7 @@
 #include "CPP_BaseItemClass.h"
 #include "FarmingTypes.generated.h"
 
-// Состояние клетки
+// Cell state
 UENUM(BlueprintType)
 enum class ECellState : uint8
 {
@@ -14,7 +14,7 @@ enum class ECellState : uint8
     Planted_Watered     UMETA(DisplayName = "Planted Watered")
 };
 
-// Стадия роста
+// Growth stage
 UENUM(BlueprintType)
 enum class EGrowthStage : uint8
 {
@@ -23,7 +23,7 @@ enum class EGrowthStage : uint8
     Final   UMETA(DisplayName = "Final")
 };
 
-// Данные о культуре (для DataTable)
+// Plant data (for DataTable)
 USTRUCT(BlueprintType)
 struct FCropData : public FTableRowBase
 {
@@ -35,7 +35,7 @@ struct FCropData : public FTableRowBase
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Farming")
     int32 SeedItemID = -1;
 
-    // Дни на каждую стадию
+    // Days for every stage
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Farming")
     int32 DaysForSeed = 2;
 
@@ -43,5 +43,14 @@ struct FCropData : public FTableRowBase
     int32 DaysForSprout = 3;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Farming")
-    TSubclassOf<ACPP_BaseItemClass> HarvestItemClass; // Blueprint предмета урожая
+    TSubclassOf<ACPP_BaseItemClass> HarvestItemClass; // Blueprint for harvest item
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Farming|Visual")
+    UStaticMesh* SeedMesh;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Farming|Visual")
+    UStaticMesh* SproutMesh;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Farming|Visual")
+    UStaticMesh* FinalMesh;
 };

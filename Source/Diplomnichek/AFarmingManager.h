@@ -21,16 +21,16 @@ public:
     // === Grid params ===
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Farming|Grid")
-    float CellSize = 100.0f; // Размер клетки в см
+    float CellSize = 100.0f;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Farming|Grid")
-    int32 MaxGridWidth = 20; // Максимальный размер сетки в клетках
+    int32 MaxGridWidth = 20; // Max size of grid in cells
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Farming|Grid")
     int32 MaxGridHeight = 20;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Farming|Grid")
-    FVector GridOrigin; // Левый нижний угол сетки (задаётся в редакторе)
+    FVector GridOrigin; // Left down angle of grid
 
     // === DataTable with plants ===
 
@@ -59,13 +59,21 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Farming")
     void UpdateAllCellsAtEndOfDay();
 
-    // Выровнять точку по сетке
+    // Align point to  grid
     UFUNCTION(BlueprintPure, Category = "Farming")
     FVector SnapToGrid(FVector WorldLocation) const;
 
-    // Найти клетку по позиции
+    // Find a cell by position
     UFUNCTION(BlueprintPure, Category = "Farming")
     AGardenCell* FindCellAtGrid(int32 GridX, int32 GridY) const;
+
+    // Checking whether point falls within boundaries of this grid
+    UFUNCTION(BlueprintPure, Category = "Farming")
+    bool IsLocationInGrid(FVector WorldLocation) const;
+
+    // Static method for finding the nearest FarmingManager
+    UFUNCTION(BlueprintCallable, Category = "Farming", meta = (WorldContext = "WorldContext"))
+    static AFarmingManager* GetClosestFarmingManager(UObject* WorldContext, FVector Location);
 
 protected:
     virtual void BeginPlay() override;

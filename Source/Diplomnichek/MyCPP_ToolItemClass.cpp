@@ -7,9 +7,7 @@
 bool AMyCPP_ToolItemClass::UseItem_Implementation(AActor* User, FVector TargetLocation)
 {
     // Находим FarmingManager на уровне
-    TArray<AActor*> Found;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AFarmingManager::StaticClass(), Found);
-    AFarmingManager* FM = Found.Num() > 0 ? Cast<AFarmingManager>(Found[0]) : nullptr;
+    AFarmingManager* FM = AFarmingManager::GetClosestFarmingManager(GetWorld(), TargetLocation);
 
     if (!FM)
         return false;

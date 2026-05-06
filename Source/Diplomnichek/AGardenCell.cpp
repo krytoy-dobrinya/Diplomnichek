@@ -53,12 +53,30 @@ bool AGardenCell::Water()
     return true;
 }
 
-bool AGardenCell::PlantSeed(int32 SeedItemID, int32 DaysForSeed, int32 DaysForSprout)
+bool AGardenCell::PlantSeed(int32 SeedItemID, int32 DaysForSeed, int32 DaysForSprout, UDataTable* CropDataTable)
 {
     if (CurrentState != ECellState::Tilled_Dry && CurrentState != ECellState::Tilled_Watered)
         return false;
 
     PlantedCropID = SeedItemID;
+    SeedMesh = nullptr;
+    SproutMesh = nullptr;
+    FinalMesh = nullptr;
+    if (CropDataTable)
+    {
+        TArray<FCropData*> Rows;
+        CropDataTable->GetAllRows<FCropData>("", Rows);
+        for (FCropData* Row : Rows)
+        {
+            if (Row && Row->SeedItemID == SeedItemID)
+            {
+                SeedMesh = Row->SeedMesh;
+                SproutMesh = Row->SproutMesh;
+                FinalMesh = Row->FinalMesh;
+                break;
+            }
+        }
+    }
     GrowthStage = EGrowthStage::Seed;
     DaysWateredInStage = 0;
     DaysForSeedStage = DaysForSeed;

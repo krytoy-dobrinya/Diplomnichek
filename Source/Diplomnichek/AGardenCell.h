@@ -37,6 +37,16 @@ public:
     UPROPERTY(BlueprintReadOnly, Category = "Farming")
     int32 GridY = 0;
 
+    // Meshes
+    UPROPERTY(BlueprintReadOnly, Category = "Farming")
+    UStaticMesh* SeedMesh;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Farming")
+    UStaticMesh* SproutMesh;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Farming")
+    UStaticMesh* FinalMesh;
+
     // === Components ===
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -44,6 +54,7 @@ public:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     UStaticMeshComponent* PlantMeshComponent; // Меш растения поверх грядки
+
 
     // === Methods ===
 
@@ -54,7 +65,7 @@ public:
     bool Water();
 
     UFUNCTION(BlueprintCallable, Category = "Farming")
-    bool PlantSeed(int32 SeedItemID, int32 DaysForSeed, int32 DaysForSprout);
+    bool PlantSeed(int32 SeedItemID, int32 DaysForSeed, int32 DaysForSprout, UDataTable* CropDataTable);
 
     UFUNCTION(BlueprintCallable, Category = "Farming")
     bool Harvest(ACPP_BaseItemClass*& OutItem, UDataTable* CropDataTable);
