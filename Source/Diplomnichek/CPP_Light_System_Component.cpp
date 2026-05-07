@@ -1,150 +1,59 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-#include "Kismet/GameplayStatics.h"
-#include "Engine/World.h"
+// CPP_Light_System_Component.cpp
 #include "CPP_Light_System_Component.h"
-
 #include "CPP_Light_Source.h"
+#include "Engine/World.h"
+#include "GameFramework/Character.h"
 
-ULightHealthComponent::ULightHealthComponent()
+ULight_System_Component::ULight_System_Component()
 {
-    PrimaryComponentTick.bCanEverTick = true;
+    PrimaryComponentTick.bCanEverTick = false; // Тик пока не нужен
 }
 
-void ULightHealthComponent::BeginPlay()
+void ULight_System_Component::BeginPlay()
 {
     Super::BeginPlay();
-
-    // При старте проверяем все источники света
-    CheckAllLightSources();
+    
+    // При старте просто обнуляем счётчик
+    LightCounter = 0;
+    
+    // TODO: Здесь позже можно добавить проверку всех источников на старте
 }
 
-void ULightHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType,
-    FActorComponentTickFunction* ThisTickFunction)
+void ULight_System_Component::RecalculateLightCounter()
 {
-    Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-    // Обработка таймера смерти
-    if (bDeathTimerActive && !bInvincibleFlag)
-    {
-        DeathTimer -= DeltaTime;
-        OnDeathTimerUpdated.Broadcast(DeathTimer);
-
-        if (DeathTimer <= 0.0f)
-        {
-            DeathTimer = 0.0f;
-            bDeathTimerActive = false;
-            OnPlayerDiedInDarkness.Broadcast();
-        }
-    }
+    // Пока что просто обновляем UI/логику
+    UE_LOG(LogTemp, Warning, TEXT("Light Counter Updated: %d"), LightCounter);
+    
+    // Здесь позже будет логика таймера смерти
 }
 
-void ULightHealthComponent::AddLightSource(AActor* LightSource)
+void ULight_System_Component::IncrementCounter()
 {
-    if (!LightSource) return;
-
-    // Проверяем, нет ли уже этого источника в списке
-    for (const TWeakObjectPtr<AActor>& ExistingSource : ActiveLightSources)
-    {
-        if (ExistingSource.Get() == LightSource)
-            return; // Уже есть
-    }
-
-    ActiveLightSources.Add(LightSource);
     LightCounter++;
-
-    UE_LOG(LogTemp, Warning, TEXT("Light source added. Counter: %d"), LightCounter);
-
-    // Если появился свет — останавливаем таймер
-    if (LightCounter > 0)
-    {
-        StopDeathTimer();
-    }
+    RecalculateLightCounter();
 }
 
-void ULightHealthComponent::RemoveLightSource(AActor* LightSource)
+void ULight_System_Component::DecrementCounter()
 {
-    if (!LightSource) return;
-
-    ActiveLightSources.RemoveAll([LightSource](const TWeakObjectPtr<AActor>& Source) {
-        return Source.Get() == LightSource;
-    });
-
     LightCounter = FMath::Max(0, LightCounter - 1);
-
-    UE_LOG(LogTemp, Warning, TEXT("Light source removed. Counter: %d"), LightCounter);
-
-    // Если источников не осталось и нет неуязвимости — запускаем таймер
-    if (LightCounter <= 0 && !bInvincibleFlag)
-    {
-        StartDeathTimer();
-    }
+    RecalculateLightCounter();
 }
 
-void ULightHealthComponent::SetInvincibleFlag(bool bNewFlag)
+bool ULight_System_Component::HasLineOfSightToPlayer(ACPP_Light_Source* LightSource) const
 {
-    bInvincibleFlag = bNewFlag;
+    if (!LightSource || !GetOwner()) return false;
 
-    if (bInvincibleFlag)
-    {
-        // Включили фонарь — останавливаем таймер
-        StopDeathTimer();
-    }
-    else
-    {
-        // Выключили фонарь — если нет других источников, запускаем таймер
-        if (LightCounter <= 0)
-        {
-            StartDeathTimer();
-        }
-    }
-}
+    // Настройки Line Trace (пока используем Visibility канал)
+    FHitResult HitResult;
+    FCollisionQueryParams QueryParams;
+    QueryParams.AddIgnoredActor(GetOwner());
+    QueryParams.AddIgnoredActor(LightSource);
 
-void ULightHealthComponent::CheckAllLightSources()
-{
-    // Находим все источники света в мире и проверяем, не пересекается ли персонаж с ними
-    TArray<AActor*> FoundLights;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACPP_BaseLightSource::StaticClass(), FoundLights);
+    FVector Start = LightSource->GetActorLocation();
+    FVector End = GetOwner()->GetActorLocation();
 
-    for (AActor* Light : FoundLights)
-    {
-        // Получаем коллизию источника
-        UPrimitiveComponent* LightCollision = Cast<UPrimitiveComponent>(
-            Light->GetComponentByClass(UPrimitiveComponent::StaticClass()));
-
-        if (!LightCollision) continue;
-
-        // Получаем капсулу персонажа
-        AActor* Owner = GetOwner();
-        if (!Owner) continue;
-
-        UPrimitiveComponent* PlayerCapsule = Cast<UPrimitiveComponent>(
-            Owner->GetComponentByClass(UPrimitiveComponent::StaticClass()));
-
-        if (!PlayerCapsule) continue;
-
-        // Проверяем пересечение
-        if (LightCollision->IsOverlappingComponent(PlayerCapsule))
-        {
-            AddLightSource(Light);
-        }
-    }
-}
-
-void ULightHealthComponent::StartDeathTimer()
-{
-    if (bInvincibleFlag) return;
-
-    DeathTimer = DeathTime;
-    bDeathTimerActive = true;
-
-    UE_LOG(LogTemp, Warning, TEXT("Death timer started: %.1f seconds"), DeathTime);
-}
-
-void ULightHealthComponent::StopDeathTimer()
-{
-    bDeathTimerActive = false;
-    DeathTimer = DeathTime; // Сбрасываем таймер
-
-    UE_LOG(LogTemp, Warning, TEXT("Death timer stopped"));
+    bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, QueryParams);
+    
+    // Если не попали в препятствие, значит, видимость есть
+    return !bHit;
 }
