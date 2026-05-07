@@ -33,6 +33,9 @@ private:
     UPROPERTY()
     USphereComponent* LightCollision;
 
+    // Видит ли луч игрока
+    bool bWasPlayerVisible = false;
+
     void CreateLightCollision();
 
     UFUNCTION()

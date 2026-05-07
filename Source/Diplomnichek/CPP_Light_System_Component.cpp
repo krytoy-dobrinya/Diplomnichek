@@ -1,30 +1,34 @@
-// CPP_Light_System_Component.cpp
 #include "CPP_Light_System_Component.h"
 #include "CPP_Light_Source.h"
 #include "Engine/World.h"
-#include "GameFramework/Character.h"
+#include "Engine/Engine.h"  // <-- Добавлен для GEngine
 
 ULight_System_Component::ULight_System_Component()
 {
-    PrimaryComponentTick.bCanEverTick = false; // Тик пока не нужен
+    PrimaryComponentTick.bCanEverTick = true;  // Включаем тик
 }
 
 void ULight_System_Component::BeginPlay()
 {
     Super::BeginPlay();
-    
-    // При старте просто обнуляем счётчик
     LightCounter = 0;
-    
-    // TODO: Здесь позже можно добавить проверку всех источников на старте
+}
+
+void ULight_System_Component::TickComponent(float DeltaTime, ELevelTick TickType,
+    FActorComponentTickFunction* ThisTickFunction)
+{
+    Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+    if (bDebugMode)
+    {
+        FString DebugText = FString::Printf(TEXT("Light Counter: %d"), LightCounter);
+        GEngine->AddOnScreenDebugMessage(1, 0.0f, FColor::Yellow, DebugText);
+    }
 }
 
 void ULight_System_Component::RecalculateLightCounter()
 {
-    // Пока что просто обновляем UI/логику
     UE_LOG(LogTemp, Warning, TEXT("Light Counter Updated: %d"), LightCounter);
-    
-    // Здесь позже будет логика таймера смерти
 }
 
 void ULight_System_Component::IncrementCounter()
@@ -43,7 +47,6 @@ bool ULight_System_Component::HasLineOfSightToPlayer(ACPP_Light_Source* LightSou
 {
     if (!LightSource || !GetOwner()) return false;
 
-    // Настройки Line Trace (пока используем Visibility канал)
     FHitResult HitResult;
     FCollisionQueryParams QueryParams;
     QueryParams.AddIgnoredActor(GetOwner());
@@ -53,7 +56,5 @@ bool ULight_System_Component::HasLineOfSightToPlayer(ACPP_Light_Source* LightSou
     FVector End = GetOwner()->GetActorLocation();
 
     bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, QueryParams);
-    
-    // Если не попали в препятствие, значит, видимость есть
     return !bHit;
 }
