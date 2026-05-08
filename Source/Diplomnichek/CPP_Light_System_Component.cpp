@@ -1,17 +1,21 @@
 #include "CPP_Light_System_Component.h"
 #include "CPP_Light_Source.h"
+#include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
-#include "Engine/Engine.h"  // <-- Добавлен для GEngine
+#include "Engine/Engine.h"
+#include "DrawDebugHelpers.h"
 
 ULight_System_Component::ULight_System_Component()
 {
-    PrimaryComponentTick.bCanEverTick = true;  // Включаем тик
+    PrimaryComponentTick.bCanEverTick = true;
 }
 
 void ULight_System_Component::BeginPlay()
 {
     Super::BeginPlay();
     LightCounter = 0;
+
+    CheckAllLightSourcesAtStart();
 }
 
 void ULight_System_Component::TickComponent(float DeltaTime, ELevelTick TickType,
@@ -21,7 +25,9 @@ void ULight_System_Component::TickComponent(float DeltaTime, ELevelTick TickType
 
     if (bDebugMode)
     {
-        FString DebugText = FString::Printf(TEXT("Light Counter: %d"), LightCounter);
+        FString DebugText = FString::Printf(TEXT("Light Counter: %d \nSafe Zones: %d"),
+            LightCounter,
+            Safe_Zone);
         GEngine->AddOnScreenDebugMessage(1, 0.0f, FColor::Yellow, DebugText);
     }
 }
@@ -49,12 +55,52 @@ bool ULight_System_Component::HasLineOfSightToPlayer(ACPP_Light_Source* LightSou
 
     FHitResult HitResult;
     FCollisionQueryParams QueryParams;
-    QueryParams.AddIgnoredActor(GetOwner());
     QueryParams.AddIgnoredActor(LightSource);
+    QueryParams.bTraceComplex = false;
 
-    FVector Start = LightSource->GetActorLocation();
+    FVector Start = LightSource->GetActorLocation() + FVector(0, 0, LightSource->LightCollisionHeight);
     FVector End = GetOwner()->GetActorLocation();
 
-    bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, QueryParams);
-    return !bHit;
+    bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_GameTraceChannel1, QueryParams);
+
+    return !bHit || (bHit && HitResult.GetActor() == GetOwner());
+}
+
+void ULight_System_Component::CheckAllLightSourcesAtStart()
+{
+    TArray<AActor*> FoundActors;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACPP_Light_Source::StaticClass(), FoundActors);
+
+    AActor* Owner = GetOwner();
+    if (!Owner) return;
+
+    for (AActor* Actor : FoundActors)
+    {
+        ACPP_Light_Source* LightSource = Cast<ACPP_Light_Source>(Actor);
+        if (!LightSource) continue;
+
+        float Distance = FVector::Dist(Owner->GetActorLocation(), LightSource->GetActorLocation());
+        float LightRadius = LightSource->LightRadius + 50.0f;
+
+        if (Distance <= LightRadius)
+        {
+            if (HasLineOfSightToPlayer(LightSource))
+            {
+                AllLightSources.Add(LightSource);
+
+                // Имитируем вход игрока в коллизию
+                LightSource->SimulatePlayerEnter(Owner);
+
+                if (bDebugMode)
+                {
+                    UE_LOG(LogTemp, Warning, TEXT("Start check: light source at distance %.1f illuminates player"), Distance);
+                }
+            }
+        }
+    }
+
+    if (bDebugMode)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Start check complete. LightCounter: %d"), LightCounter);
+    }
 }

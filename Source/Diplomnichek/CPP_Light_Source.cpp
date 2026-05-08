@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #include "CPP_Light_Source.h"
 #include "CPP_Light_System_Component.h"
 #include "DrawDebugHelpers.h"
@@ -44,6 +42,16 @@ void ACPP_Light_Source::CreateLightCollision()
     LightCollision->SetHiddenInGame(false);
 }
 
+void ACPP_Light_Source::SimulatePlayerEnter(AActor* Player)
+{
+    if (Player && Player->IsA(ACharacter::StaticClass()))
+    {
+        CurrentPlayer = Player;
+        bIsPlayerInRange = true;
+        PlayerLocation = Player->GetActorLocation();
+    }
+}
+
 void ACPP_Light_Source::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
@@ -66,12 +74,10 @@ void ACPP_Light_Source::Tick(float DeltaTime)
         bool bNowVisible = false;
         if (bHit)
         {
-            // Луч во что-то попал. Проверяем, в игрока ли?
             bNowVisible = (HitResult.GetActor() == CurrentPlayer.Get());
         }
         else
         {
-            // Луч ни во что не попал — считаем что видим (на всякий случай)
             bNowVisible = true;
         }
 

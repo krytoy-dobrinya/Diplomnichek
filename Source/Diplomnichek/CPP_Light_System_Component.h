@@ -6,7 +6,7 @@
 
 class ACPP_Light_Source;
 
-UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class DIPLOMNICHEK_API ULight_System_Component : public UActorComponent
 {
     GENERATED_BODY()
@@ -21,14 +21,36 @@ public:
     virtual void TickComponent(float DeltaTime, ELevelTick TickType,
         FActorComponentTickFunction* ThisTickFunction) override;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Light Health")
+    // Счётчик активных источников света
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Light System")
     int32 LightCounter = 0;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Light System")
+    int32 Safe_Zone = 0;
+
+    // Режим отладки
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
     bool bDebugMode = true;
 
+    // Функция для пересчёта счётчика
+    UFUNCTION(BlueprintCallable, Category = "Light System")
     void RecalculateLightCounter();
+
+    // Добавляет очко к счётчику (вызывается из CPP_Light_Source)
     void IncrementCounter();
+
+    // Убавляет очко из счётчика (вызывается из CPP_Light_Source)
     void DecrementCounter();
+
+    // Внутренняя проверка, есть ли прямая видимость между источником и игроком
     bool HasLineOfSightToPlayer(ACPP_Light_Source* LightSource) const;
+
+    // Проверка всех источников света при старте игры
+    UFUNCTION(BlueprintCallable, Category = "Light System")
+    void CheckAllLightSourcesAtStart();
+
+private:
+    // Список всех источников света на уровне
+    UPROPERTY()
+    TArray<ACPP_Light_Source*> AllLightSources;
 };

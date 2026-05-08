@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -29,12 +27,22 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Light")
     float LightCollisionHeight = 150.0f;
 
+    // Имитация входа игрока в коллизию (вызывается из компонента при старте)
+    void SimulatePlayerEnter(AActor* Player);
+
+    // Флаг: игрок внутри коллизии (нужен компоненту для проверки)
+    bool bIsPlayerInRange = false;
+
+    // Флаг: луч видит игрока (нужен компоненту для проверки)
+    bool bWasPlayerVisible = false;
+
+    // Текущий игрок (нужен компоненту)
+    UPROPERTY()
+    TWeakObjectPtr<AActor> CurrentPlayer;
+
 private:
     UPROPERTY()
     USphereComponent* LightCollision;
-
-    // Видит ли луч игрока
-    bool bWasPlayerVisible = false;
 
     void CreateLightCollision();
 
@@ -46,11 +54,6 @@ private:
     UFUNCTION()
     void OnPlayerExit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
         UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
-    UPROPERTY()
-    TWeakObjectPtr<AActor> CurrentPlayer;
-
-    bool bIsPlayerInRange = false;
 
     UPROPERTY(EditAnywhere, Category = "Debug")
     bool bShowDebugRay = true;
