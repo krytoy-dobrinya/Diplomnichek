@@ -14,6 +14,8 @@ void AFarmingManager::BeginPlay()
 {
     Super::BeginPlay();
     GridOrigin = GetActorLocation();
+    GridOrigin.X -= (MaxGridWidth * CellSize) / 2.0f;
+    GridOrigin.Y -= (MaxGridHeight * CellSize) / 2.0f;
 }
 
 FVector AFarmingManager::SnapToGrid(FVector WorldLocation) const
@@ -22,15 +24,15 @@ FVector AFarmingManager::SnapToGrid(FVector WorldLocation) const
     FVector LocalPos = WorldLocation - GridOrigin;
 
     // Выравниваем по размеру клетки
-    int32 GridX = FMath::RoundToInt(LocalPos.X / CellSize);
-    int32 GridY = FMath::RoundToInt(LocalPos.Y / CellSize);
+    int32 GridX = FMath::FloorToFloat(LocalPos.X / CellSize);
+    int32 GridY = FMath::FloorToFloat(LocalPos.Y / CellSize);
 
     // Проверяем, не выходит ли за границы
     if (GridX < 0 || GridX >= MaxGridWidth || GridY < 0 || GridY >= MaxGridHeight)
-        return FVector::ZeroVector; // Невалидная позиция
+        return FVector::ZeroVector;
 
     // Возвращаем мировые координаты центра клетки
-    return GridOrigin + FVector(GridX * CellSize, GridY * CellSize, 0);
+    return GridOrigin + FVector(GridX * CellSize + CellSize * 0.5f, GridY * CellSize + CellSize * 0.5f, 0);
 }
 
 AGardenCell* AFarmingManager::FindCellAtGrid(int32 GridX, int32 GridY) const
@@ -49,12 +51,12 @@ AGardenCell* AFarmingManager::TryTillAtLocation(FVector WorldLocation)
     if (SnappedPos.IsZero())
         return nullptr; // За границей сетки
     FVector SpawnPos = SnappedPos;
-    SpawnPos.Z += 10;
+    SpawnPos.Z = GridOrigin.Z + 5.0f;
 
     // Вычисляем координаты в сетке
     FVector LocalPos = SnappedPos - GridOrigin;
-    int32 GridX = FMath::RoundToInt(LocalPos.X / CellSize);
-    int32 GridY = FMath::RoundToInt(LocalPos.Y / CellSize);
+    int32 GridX = FMath::FloorToFloat(LocalPos.X / CellSize);
+    int32 GridY = FMath::FloorToFloat(LocalPos.Y / CellSize);
 
     // Проверяем, нет ли уже клетки здесь
     if (FindCellAtGrid(GridX, GridY))
@@ -91,8 +93,8 @@ AGardenCell* AFarmingManager::TryWaterAtLocation(FVector WorldLocation)
     if (SnappedPos.IsZero())
         return nullptr; // За границей сетки
     FVector LocalPos = SnappedPos - GridOrigin;
-    int32 GridX = FMath::RoundToInt(LocalPos.X / CellSize);
-    int32 GridY = FMath::RoundToInt(LocalPos.Y / CellSize);
+    int32 GridX = FMath::FloorToFloat(LocalPos.X / CellSize);
+    int32 GridY = FMath::FloorToFloat(LocalPos.Y / CellSize);
 
     AGardenCell* Cell = FindCellAtGrid(GridX, GridY);
     if (Cell)
@@ -106,8 +108,8 @@ AGardenCell* AFarmingManager::TryPlantAtLocation(FVector WorldLocation, int32 Se
 {
     FVector SnappedPos = SnapToGrid(WorldLocation);
     FVector LocalPos = SnappedPos - GridOrigin;
-    int32 GridX = FMath::RoundToInt(LocalPos.X / CellSize);
-    int32 GridY = FMath::RoundToInt(LocalPos.Y / CellSize);
+    int32 GridX = FMath::FloorToFloat(LocalPos.X / CellSize);
+    int32 GridY = FMath::FloorToFloat(LocalPos.Y / CellSize);
 
     AGardenCell* Cell = FindCellAtGrid(GridX, GridY);
     if (!Cell || !CropDataTable)
@@ -138,8 +140,8 @@ bool AFarmingManager::TryHarvestAtLocation(FVector WorldLocation, ACPP_BaseItemC
         return false;
 
     FVector LocalPos = SnappedPos - GridOrigin;
-    int32 GridX = FMath::RoundToInt(LocalPos.X / CellSize);
-    int32 GridY = FMath::RoundToInt(LocalPos.Y / CellSize);
+    int32 GridX = FMath::FloorToFloat(LocalPos.X / CellSize);
+    int32 GridY = FMath::FloorToFloat(LocalPos.Y / CellSize);
 
     AGardenCell* Cell = FindCellAtGrid(GridX, GridY);
     if (!Cell)

@@ -39,7 +39,7 @@ bool AGardenCell::Water()
         CurrentState != ECellState::Planted_Watered)
         return false;
 
-    // Меняем Dry → Watered, сохраняя тип (пустая/засаженная)
+    // Меняем Dry -> Watered, сохраняя тип (пустая/засаженная)
     if (CurrentState == ECellState::Tilled_Dry)
         CurrentState = ECellState::Tilled_Watered;
     else if (CurrentState == ECellState::Planted_Dry)
