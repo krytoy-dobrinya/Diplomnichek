@@ -24,6 +24,9 @@ public:
     UPROPERTY(BlueprintReadOnly, Category = "Time")
     int32 CurrentYear;
 
+    UPROPERTY(BlueprintReadOnly, Category = "Time")
+    float CurrentHour;
+
     UPROPERTY(EditAnywhere, Category = "Time")
     float RealSecondsPerGameHour = 60.0f;
 
@@ -73,7 +76,7 @@ public:
     int32 GetCurrentDay() const { return CurrentDay; }
 
 private:
-    float CurrentHour;
+
 
     void AdvanceTime(float DeltaTime);
     void EndDay();
