@@ -69,6 +69,9 @@ private:
     UPROPERTY()
     TArray<ACPP_Light_Source*> AllLightSources;
 
+    // Флаг что игрок уже умер
+    bool bHasDied = false;
+
     void StartDeathTimer();
     void StopDeathTimer();
 };

@@ -4,6 +4,7 @@
 #include "Engine/World.h"
 #include "Engine/Engine.h"
 #include "DrawDebugHelpers.h"
+#include "AGameTimeManager.h"
 
 ULight_System_Component::ULight_System_Component()
 {
@@ -23,7 +24,8 @@ void ULight_System_Component::TickComponent(float DeltaTime, ELevelTick TickType
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-    // Проверяем, в опасности ли игрок
+    if (bHasDied) return;  // ← Если уже умерли — ничего не делаем
+
     bool bInDanger = (LightCounter <= 0 && Safe_Zone <= 0);
 
     if (bInDanger)
@@ -39,6 +41,7 @@ void ULight_System_Component::TickComponent(float DeltaTime, ELevelTick TickType
             {
                 CurrentDeathTimer = 0.0f;
                 bIsDying = false;
+                bHasDied = true;  // Блокируем повторный вызов старта нового дня
                 OnPlayerDied();
             }
         }
@@ -149,8 +152,13 @@ void ULight_System_Component::StopDeathTimer()
 
 void ULight_System_Component::OnPlayerDied()
 {
-    if (GEngine)
+    TArray<AActor*> Found;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGameTimeManager::StaticClass(), Found);
+    if (Found.Num() > 0)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, TEXT("Ты помер!"));
+        if (AGameTimeManager* TimeManager = Cast<AGameTimeManager>(Found[0]))
+        {
+            TimeManager->EndDayEarly();
+        }
     }
 }
