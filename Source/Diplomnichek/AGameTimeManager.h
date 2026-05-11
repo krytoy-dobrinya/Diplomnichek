@@ -48,6 +48,9 @@ public:
     UPROPERTY(EditAnywhere, Category = "Time")
     TSoftObjectPtr<AActor> SpawnPoint; // ссылка на Target Point
 
+    UPROPERTY(EditAnywhere, Category = "Time")
+    TSoftObjectPtr<AActor> MedicPoint; // ссылка на Medic Point
+
 protected:
     virtual void BeginPlay() override;
 
@@ -66,6 +69,12 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Time")
     void StartNewDay();
 
+    UFUNCTION(BlueprintCallable, Category = "Time")
+    void EndDayDeath();
+
+    UFUNCTION(BlueprintCallable, Category = "Time")
+    void PlayerDeath();
+
     UFUNCTION(BlueprintPure, Category = "Time")
     FString GetTimeString() const;
     
@@ -77,7 +86,6 @@ public:
 
 private:
 
-
     void AdvanceTime(float DeltaTime);
-    void EndDay();
+    void EndDay(bool reason);
 };

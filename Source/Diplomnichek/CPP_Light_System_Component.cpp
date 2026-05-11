@@ -138,6 +138,13 @@ void ULight_System_Component::CheckAllLightSourcesAtStart()
     }
 }
 
+void ULight_System_Component::ResetDeathState()
+{
+    bHasDied = false;
+    bIsDying = false;
+    CurrentDeathTimer = DeathTimer;
+}
+
 void ULight_System_Component::StartDeathTimer()
 {
     bIsDying = true;
@@ -158,7 +165,17 @@ void ULight_System_Component::OnPlayerDied()
     {
         if (AGameTimeManager* TimeManager = Cast<AGameTimeManager>(Found[0]))
         {
-            TimeManager->EndDayEarly();
+            TimeManager->EndDayDeath();
         }
     }
+    
+    // Задержка перед сбросом состояния смерти
+    FTimerHandle TimerHandle;
+    GetWorld()->GetTimerManager().SetTimer(
+        TimerHandle,
+        this,
+        &ULight_System_Component::ResetDeathState,
+        4.0f,   // 4 секунды задержки
+        false
+    );
 }

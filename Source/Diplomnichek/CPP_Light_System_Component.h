@@ -64,6 +64,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Light System")
     void CheckAllLightSourcesAtStart();
 
+    UFUNCTION(BlueprintCallable, Category = "Light System")
+    void ResetDeathState();
+
 private:
     // Список всех источников света на уровне
     UPROPERTY()

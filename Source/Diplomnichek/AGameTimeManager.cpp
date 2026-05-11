@@ -47,16 +47,21 @@ void AGameTimeManager::AdvanceTime(float DeltaTime)
 
     if (CurrentHour >= DayEndHour + 24.0f)
     {
-        EndDay();
+        EndDay(true);
     }
 }
 
 void AGameTimeManager::EndDayEarly()
 {
-    EndDay();
+    EndDay(true);
 }
 
-void AGameTimeManager::EndDay()
+void AGameTimeManager::EndDayDeath()
+{
+    EndDay(false);
+}
+
+void AGameTimeManager::EndDay(bool reason)
 {
     StopTime();
 
@@ -75,13 +80,16 @@ void AGameTimeManager::EndDay()
 
     // Запускаем таймер на 4 секунды, потом начинаем новый день
     FTimerHandle TimerHandle;
-    GetWorld()->GetTimerManager().SetTimer(
-        TimerHandle,
-        this,
-        &AGameTimeManager::StartNewDay,
-        4.0f,
-        false
-    );
+    if (reason) // Персонаж поспал
+    {
+        GetWorld()->GetTimerManager().SetTimer(
+            TimerHandle, this, &AGameTimeManager::StartNewDay, 4.0f, false);
+    }
+    else        // Персонаж умер
+    {
+        GetWorld()->GetTimerManager().SetTimer(
+            TimerHandle, this, &AGameTimeManager::PlayerDeath, 4.0f, false);
+    }
 }
 
 void AGameTimeManager::StartNewDay()
@@ -113,6 +121,37 @@ void AGameTimeManager::StartNewDay()
     CurrentHour = DayStartHour;
     StartTime();
 }
+
+void AGameTimeManager::PlayerDeath()
+{
+    // Телепортация игрока
+    if (!MedicPoint.IsNull())
+    {
+        AActor* Spawn = MedicPoint.LoadSynchronous();
+        if (Spawn)
+        {
+            APlayerController* PC = GetWorld()->GetFirstPlayerController();
+            if (PC && PC->GetPawn())
+            {
+                PC->GetPawn()->SetActorLocation(Spawn->GetActorLocation());
+                PC->GetPawn()->SetActorRotation(Spawn->GetActorRotation());
+            }
+        }
+    }
+
+    if (++CurrentDay > 28)
+    {
+        CurrentDay = 1;
+        if (++CurrentMonth > 4)
+        {
+            CurrentMonth = 1;
+            ++CurrentYear;
+        }
+    }
+    CurrentHour = DayStartHour;
+    StartTime();
+}
+
 
 FString AGameTimeManager::GetTimeString() const
 {
