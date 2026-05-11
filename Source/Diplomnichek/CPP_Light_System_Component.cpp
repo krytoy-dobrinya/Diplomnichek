@@ -23,11 +23,41 @@ void ULight_System_Component::TickComponent(float DeltaTime, ELevelTick TickType
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+    // Проверяем, в опасности ли игрок
+    bool bInDanger = (LightCounter <= 0 && Safe_Zone <= 0);
+
+    if (bInDanger)
+    {
+        if (!bIsDying)
+        {
+            StartDeathTimer();
+        }
+        else
+        {
+            CurrentDeathTimer -= DeltaTime;
+            if (CurrentDeathTimer <= 0.0f)
+            {
+                CurrentDeathTimer = 0.0f;
+                bIsDying = false;
+                OnPlayerDied();
+            }
+        }
+    }
+    else
+    {
+        if (bIsDying)
+        {
+            StopDeathTimer();
+        }
+    }
+
+    // Отладка
     if (bDebugMode)
     {
-        FString DebugText = FString::Printf(TEXT("Light Counter: %d \nSafe Zones: %d"),
+        FString DebugText = FString::Printf(TEXT("Light: %d | SafeZones: %d | %s"),
             LightCounter,
-            Safe_Zone);
+            Safe_Zone,
+            bIsDying ? *FString::Printf(TEXT("Dying: %.1f"), CurrentDeathTimer) : TEXT("Safe"));
         GEngine->AddOnScreenDebugMessage(1, 0.0f, FColor::Yellow, DebugText);
     }
 }
@@ -102,5 +132,25 @@ void ULight_System_Component::CheckAllLightSourcesAtStart()
     if (bDebugMode)
     {
         UE_LOG(LogTemp, Warning, TEXT("Start check complete. LightCounter: %d"), LightCounter);
+    }
+}
+
+void ULight_System_Component::StartDeathTimer()
+{
+    bIsDying = true;
+    CurrentDeathTimer = DeathTimer;
+}
+
+void ULight_System_Component::StopDeathTimer()
+{
+    bIsDying = false;
+    CurrentDeathTimer = DeathTimer;
+}
+
+void ULight_System_Component::OnPlayerDied()
+{
+    if (GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, TEXT("Ты помер!"));
     }
 }

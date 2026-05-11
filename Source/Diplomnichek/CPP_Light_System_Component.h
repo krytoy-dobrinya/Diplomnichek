@@ -28,9 +28,24 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Light System")
     int32 Safe_Zone = 0;
 
+    // Сколько секунд до смерти (константа)
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Light System")
+    float DeathTimer = 3.0f;
+
+    // Текущий таймер
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Light System")
+    float CurrentDeathTimer = 0.0f;
+
+    // Активен ли таймер
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Light System")
+    bool bIsDying = false;
+
     // Режим отладки
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
     bool bDebugMode = true;
+
+    // Событие: игрок умер
+    void OnPlayerDied();
 
     // Функция для пересчёта счётчика
     UFUNCTION(BlueprintCallable, Category = "Light System")
@@ -53,4 +68,7 @@ private:
     // Список всех источников света на уровне
     UPROPERTY()
     TArray<ACPP_Light_Source*> AllLightSources;
+
+    void StartDeathTimer();
+    void StopDeathTimer();
 };
