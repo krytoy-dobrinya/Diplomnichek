@@ -3,6 +3,11 @@
 #include "ABuilding.h"
 #include "Kismet/GameplayStatics.h"
 #include "AFarmingManager.h"
+#include "Engine/OverlapResult.h"
+#include "Landscape.h"
+#include "Engine/TriggerBase.h"
+#include "AGardenCell.h"
+
 
 void AConstructionManager::BeginPlay()
 {
@@ -93,6 +98,51 @@ void AConstructionManager::UpdateGhostPosition()
 
 bool AConstructionManager::CanPlaceAtLocation(FVector Location) const
 {
+    if (!GhostActor) return false;
+
+    UStaticMeshComponent* Mesh = GhostActor->FindComponentByClass<UStaticMeshComponent>();
+    if (!Mesh) return true;
+
+    FVector MeshOffset = Mesh->GetRelativeLocation();
+    FVector CheckLocation = Location + MeshOffset;
+
+    FCollisionQueryParams Params;
+    Params.AddIgnoredActor(GhostActor);
+    Params.AddIgnoredActor(this);
+
+    APlayerController* PC = GetWorld()->GetFirstPlayerController();
+    if (PC && PC->GetPawn())
+        Params.AddIgnoredActor(PC->GetPawn());
+
+    TArray<AActor*> IgnoredActors;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AFarmingManager::StaticClass(), IgnoredActors);
+    for (AActor* A : IgnoredActors) Params.AddIgnoredActor(A);
+    IgnoredActors.Empty();
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGardenCell::StaticClass(), IgnoredActors);
+    for (AActor* A : IgnoredActors) Params.AddIgnoredActor(A);
+
+    TArray<FOverlapResult> Overlaps;
+    GetWorld()->OverlapMultiByChannel(
+        Overlaps,
+        CheckLocation,
+        FQuat::Identity,
+        ECC_Visibility,
+        FCollisionShape::MakeBox(Mesh->Bounds.BoxExtent),
+        Params
+    );
+
+    for (const FOverlapResult& Overlap : Overlaps)
+    {
+        if (AActor* Actor = Overlap.GetActor())
+        {
+            FString ClassName = Actor->GetClass()->GetName();
+            if (ClassName.Contains(TEXT("Landscape")) || ClassName.Contains(TEXT("Trigger")) || ClassName.Contains(TEXT("SafeZone")))
+                continue;
+
+            return false;
+        }
+    }
+
     return true;
 }
 
@@ -102,29 +152,31 @@ void AConstructionManager::ConfirmPlacement()
 
     FVector Location = GhostActor->GetActorLocation();
 
-    FActorSpawnParameters SpawnParams;
-    SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-    AActor* NewBuilding = GetWorld()->SpawnActor<AActor>(
-        CurrentBuildingData->BuildingClass,
-        Location,
-        FRotator::ZeroRotator,
-        SpawnParams
-    );
+    if (CanPlaceAtLocation(Location)) {
+        FActorSpawnParameters SpawnParams;
+        SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+        AActor* NewBuilding = GetWorld()->SpawnActor<AActor>(
+            CurrentBuildingData->BuildingClass,
+            Location,
+            FRotator::ZeroRotator,
+            SpawnParams
+        );
 
-    GhostActor->Destroy();
-    GhostActor = nullptr;
-    CurrentBuildingData = nullptr;
-    bIsPlacing = false;
+        GhostActor->Destroy();
+        GhostActor = nullptr;
+        CurrentBuildingData = nullptr;
+        bIsPlacing = false;
 
-    APlayerController* PC = GetWorld()->GetFirstPlayerController();
-    if (PC)
-    {
-        if (PC->GetPawn())
+        APlayerController* PC = GetWorld()->GetFirstPlayerController();
+        if (PC)
         {
-            PC->SetViewTargetWithBlend(PC->GetPawn(), 0.0f);
-            PC->GetPawn()->EnableInput(PC);
+            if (PC->GetPawn())
+            {
+                PC->SetViewTargetWithBlend(PC->GetPawn(), 0.0f);
+                PC->GetPawn()->EnableInput(PC);
+            }
+            DisableInput(PC);
         }
-        DisableInput(PC);
     }
 }
 

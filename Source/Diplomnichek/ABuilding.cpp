@@ -2,6 +2,7 @@
 
 ABuilding::ABuilding()
 {
+    RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
     MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-    RootComponent = MeshComponent;
+    MeshComponent->SetupAttachment(RootComponent);
 }

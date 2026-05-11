@@ -14,8 +14,6 @@ void AFarmingManager::BeginPlay()
 {
     Super::BeginPlay();
     GridOrigin = GetActorLocation();
-    GridOrigin.X -= (MaxGridWidth * CellSize) / 2.0f;
-    GridOrigin.Y -= (MaxGridHeight * CellSize) / 2.0f;
 }
 
 FVector AFarmingManager::SnapToGrid(FVector WorldLocation) const
