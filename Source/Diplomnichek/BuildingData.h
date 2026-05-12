@@ -39,7 +39,4 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     TArray<FRequiredItem> RequiredItems;
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    UStaticMesh* GhostMesh; // Меш-призрак при размещении
 };

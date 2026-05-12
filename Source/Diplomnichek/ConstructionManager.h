@@ -25,6 +25,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Building")
     void CancelPlacement();
 
+    UFUNCTION(BlueprintCallable, Category = "Building")
+    bool HasRequiredItems(UBuildingData* Data) const;
+
     // Данные текущей постройки
     UPROPERTY(BlueprintReadOnly, Category = "Building")
     UBuildingData* CurrentBuildingData;

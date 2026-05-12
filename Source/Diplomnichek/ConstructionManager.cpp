@@ -162,6 +162,8 @@ void AConstructionManager::ConfirmPlacement()
             SpawnParams
         );
 
+        
+
         GhostActor->Destroy();
         GhostActor = nullptr;
         CurrentBuildingData = nullptr;
@@ -200,4 +202,26 @@ void AConstructionManager::CancelPlacement()
         }
         DisableInput(PC);
     }
+}
+
+bool AConstructionManager::HasRequiredItems(UBuildingData* Data) const
+{
+    /*if (!Data || Data->RequiredItems.Num() == 0)
+        return true;
+
+    APlayerController* PC = GetWorld()->GetFirstPlayerController();
+    if (!PC) return false;
+
+    ACharacter* Char = PC->GetCharacter();
+    if (!Char) return false;
+
+    BPC_Inventory_Component* Inventory = Char->FindComponentByClass<BPC_Inventory_Component>();
+    if (!Inventory) return false;
+
+    for (const FRequiredItem& Req : Data->RequiredItems)
+    {
+        if (!Inventory->HasEnough(Req.ItemID, Req.Quantity))
+            return false;
+    }*/
+    return true;
 }
