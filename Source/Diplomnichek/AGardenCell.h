@@ -65,7 +65,7 @@ public:
     bool Water();
 
     UFUNCTION(BlueprintCallable, Category = "Farming")
-    bool PlantSeed(int32 SeedItemID, int32 DaysForSeed, int32 DaysForSprout, UDataTable* CropDataTable);
+    bool PlantSeed(int32 SeedItemID, UDataTable* CropDataTable);
 
     UFUNCTION(BlueprintCallable, Category = "Farming")
     bool Harvest(ACPP_BaseItemClass*& OutItem, UDataTable* CropDataTable);

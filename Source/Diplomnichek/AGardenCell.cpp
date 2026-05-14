@@ -53,7 +53,7 @@ bool AGardenCell::Water()
     return true;
 }
 
-bool AGardenCell::PlantSeed(int32 SeedItemID, int32 DaysForSeed, int32 DaysForSprout, UDataTable* CropDataTable)
+bool AGardenCell::PlantSeed(int32 SeedItemID, UDataTable* CropDataTable)
 {
     if (CurrentState != ECellState::Tilled_Dry && CurrentState != ECellState::Tilled_Watered)
         return false;
@@ -62,6 +62,8 @@ bool AGardenCell::PlantSeed(int32 SeedItemID, int32 DaysForSeed, int32 DaysForSp
     SeedMesh = nullptr;
     SproutMesh = nullptr;
     FinalMesh = nullptr;
+    DaysForSeedStage = 2;
+    DaysForSproutStage = 3;
     if (CropDataTable)
     {
         TArray<FCropData*> Rows;
@@ -73,14 +75,14 @@ bool AGardenCell::PlantSeed(int32 SeedItemID, int32 DaysForSeed, int32 DaysForSp
                 SeedMesh = Row->SeedMesh;
                 SproutMesh = Row->SproutMesh;
                 FinalMesh = Row->FinalMesh;
+                DaysForSeedStage = Row->DaysForSeed;
+                DaysForSproutStage = Row->DaysForSprout;
                 break;
             }
         }
     }
     GrowthStage = EGrowthStage::Seed;
     DaysWateredInStage = 0;
-    DaysForSeedStage = DaysForSeed;
-    DaysForSproutStage = DaysForSprout;
 
     // Сохраняем влажность при посадке
     CurrentState = (CurrentState == ECellState::Tilled_Watered)

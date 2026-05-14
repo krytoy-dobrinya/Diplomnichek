@@ -121,7 +121,7 @@ AGardenCell* AFarmingManager::TryPlantAtLocation(FVector WorldLocation, int32 Se
     {
         if (Row && Row->SeedItemID == SeedItemID)
         {
-            if (Cell->PlantSeed(SeedItemID, Row->DaysForSeed, Row->DaysForSprout, CropDataTable))
+            if (Cell->PlantSeed(SeedItemID, CropDataTable))
                 return Cell;
         }
     }

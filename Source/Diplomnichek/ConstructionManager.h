@@ -14,26 +14,26 @@ class DIPLOMNICHEK_API AConstructionManager : public AActor
 public:
     AConstructionManager();
 
-    // Начать размещение постройки
+    // Start placing building
     UFUNCTION(BlueprintCallable, Category = "Building")
     void StartPlacing(UBuildingData* Data);
 
-    // Закончить (подтвердить или отменить)
+    // Stop placing building
     UFUNCTION(BlueprintCallable, Category = "Building")
     void ConfirmPlacement();
 
     UFUNCTION(BlueprintCallable, Category = "Building")
     void CancelPlacement();
 
-    // Данные текущей постройки
+    // Data of current building
     UPROPERTY(BlueprintReadOnly, Category = "Building")
     UBuildingData* CurrentBuildingData;
 
-    // Призрак постройки
+    // Building ghost
     UPROPERTY()
     AActor* GhostActor;
 
-    // Материалы
+    // Materials
     UPROPERTY(EditAnywhere, Category = "Building")
     UMaterialInterface* ValidMaterial;
 
@@ -46,7 +46,7 @@ public:
     UPROPERTY(EditAnywhere, Category = "Building")
     float GhostHeight = 50.0f;
 
-    // Состояние
+    // State
     UPROPERTY(BlueprintReadOnly, Category = "Building")
     bool bIsPlacing = false;
 
