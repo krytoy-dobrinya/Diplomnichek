@@ -28,6 +28,9 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Light System")
     int32 Safe_Zone = 0;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Light System")
+    bool Invincible_flag = false;
+
     // Сколько секунд до смерти (константа)
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Light System")
     float DeathTimer = 3.0f;

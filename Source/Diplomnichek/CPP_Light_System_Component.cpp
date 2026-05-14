@@ -26,7 +26,7 @@ void ULight_System_Component::TickComponent(float DeltaTime, ELevelTick TickType
 
     if (bHasDied) return;  // ← Если уже умерли — ничего не делаем
 
-    bool bInDanger = (LightCounter <= 0 && Safe_Zone <= 0);
+    bool bInDanger = (LightCounter <= 0 && Safe_Zone <= 0 && Invincible_flag == false);
 
     if (bInDanger)
     {

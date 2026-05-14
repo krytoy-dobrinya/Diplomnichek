@@ -21,7 +21,7 @@ public:
 	float CPP_Current_Fuel;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	bool CPP_isDisposable;
+	bool CPP_isOpen;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	bool CPP_isLit;
