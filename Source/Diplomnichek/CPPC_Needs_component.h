@@ -28,8 +28,8 @@ public:
     float Warmth = 100.0f;
 
     // Активный источник света в руке (nullptr — ничего не держит)
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Needs")
-    TWeakObjectPtr<AMyCPP_LightingSourceItemClass> ActiveLightItem;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Needs")
+    AMyCPP_LightingSourceItemClass* ActiveLightItem = nullptr;
 
     // Для отладки
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")

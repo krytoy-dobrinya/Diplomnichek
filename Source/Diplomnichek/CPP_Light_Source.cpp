@@ -38,8 +38,9 @@ void ACPP_Light_Source::CreateLightCollision()
     LightCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
     LightCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 
-    LightCollision->SetVisibility(true);
-    LightCollision->SetHiddenInGame(false);
+
+    LightCollision->SetVisibility(bShowDebugRay);
+    LightCollision->SetHiddenInGame(!bShowDebugRay);
 }
 
 void ACPP_Light_Source::SimulatePlayerEnter(AActor* Player)

@@ -15,7 +15,7 @@ void UCPPC_Needs_component::TickComponent(float DeltaTime, ELevelTick TickType,
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
     // Получаем предмет в руке
-    AMyCPP_LightingSourceItemClass* Item = ActiveLightItem.Get();
+    AMyCPP_LightingSourceItemClass* Item = ActiveLightItem;
     bool bHasLight = (Item != nullptr);
     bool bIsLit = bHasLight && Item->CPP_isLit;
 

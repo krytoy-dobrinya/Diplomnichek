@@ -56,7 +56,7 @@ private:
         UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
     UPROPERTY(EditAnywhere, Category = "Debug")
-    bool bShowDebugRay = true;
+    bool bShowDebugRay = false;
 
     FVector PlayerLocation;
 };
