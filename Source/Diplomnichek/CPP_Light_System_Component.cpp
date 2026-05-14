@@ -123,18 +123,8 @@ void ULight_System_Component::CheckAllLightSourcesAtStart()
 
                 // Имитируем вход игрока в коллизию
                 LightSource->SimulatePlayerEnter(Owner);
-
-                if (bDebugMode)
-                {
-                    UE_LOG(LogTemp, Warning, TEXT("Start check: light source at distance %.1f illuminates player"), Distance);
-                }
             }
         }
-    }
-
-    if (bDebugMode)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Start check complete. LightCounter: %d"), LightCounter);
     }
 }
 

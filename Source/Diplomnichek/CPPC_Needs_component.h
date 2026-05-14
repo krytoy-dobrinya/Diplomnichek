@@ -7,17 +7,17 @@
 #include "MyCPP_LightingSourceItemClass.h"
 #include "CPPC_Needs_component.generated.h"
 
-class MyCPP_LightingSourceItemClass;
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class DIPLOMNICHEK_API UCPPC_Needs_component : public UActorComponent
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:	
+    UCPPC_Needs_component();
+
     virtual void TickComponent(float DeltaTime, ELevelTick TickType,
     FActorComponentTickFunction* ThisTickFunction) override;
-
 
     // Энергия персонажа (0-100)
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Needs")
@@ -31,4 +31,11 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Needs")
     TWeakObjectPtr<AMyCPP_LightingSourceItemClass> ActiveLightItem;
 
+    // Для отладки
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
+    bool bDebugMode = true;
+
+private:
+    // Таймер для расхода топлива и энергии (раз в секунду)
+    float TimeAccumulator = 0.0f;
 };

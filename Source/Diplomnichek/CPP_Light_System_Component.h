@@ -42,7 +42,7 @@ public:
 
     // Режим отладки
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
-    bool bDebugMode = true;
+    bool bDebugMode = false;
 
     // Событие: игрок умер
     void OnPlayerDied();

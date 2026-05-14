@@ -18,7 +18,7 @@ public:
 	float CPP_Max_fuel;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	float CPP_Current_fuel;
+	float CPP_Current_Fuel;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	bool CPP_isDisposable;
