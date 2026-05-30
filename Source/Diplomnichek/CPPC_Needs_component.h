@@ -7,6 +7,7 @@
 #include "MyCPP_LightingSourceItemClass.h"
 #include "CPPC_Needs_component.generated.h"
 
+class AMyCPP_LightingSourceItemClass;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class DIPLOMNICHEK_API UCPPC_Needs_component : public UActorComponent
@@ -17,7 +18,7 @@ public:
     UCPPC_Needs_component();
 
     virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-    FActorComponentTickFunction* ThisTickFunction) override;
+        FActorComponentTickFunction* ThisTickFunction) override;
 
     // Энергия персонажа (0-100)
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Needs")
@@ -28,14 +29,38 @@ public:
     float Warmth = 100.0f;
 
     // Активный источник света в руке (nullptr — ничего не держит)
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Needs")
+    TWeakObjectPtr<AMyCPP_LightingSourceItemClass> ActiveLightItem;
+
+    // Скорость изменения тепла (ед/сек)
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Needs")
-    AMyCPP_LightingSourceItemClass* ActiveLightItem = nullptr;
+    float WarmthRate = 0.1f;
+
+    // Базовый расход энергии в секунду
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Needs")
+    float BaseEnergyRate = 0.01f;
+
+    // На сколько увеличивается множитель энергии за каждую недостающую единицу тепла
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Needs")
+    float EnergyMultiplierPerHeat = 0.05f;
 
     // Для отладки
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
     bool bDebugMode = true;
 
 private:
-    // Таймер для расхода топлива и энергии (раз в секунду)
+    // Таймер для расхода потребностей (раз в секунду)
     float TimeAccumulator = 0.0f;
+
+    // Ссылка на компонент освещения
+    class ULight_System_Component* GetLightSystemComponent() const;
+
+    // Расход топлива
+    void ConsumeFuel();
+
+    // Обновление тепла
+    void UpdateWarmth();
+
+    // Обновление энергии
+    void UpdateEnergy();
 };
