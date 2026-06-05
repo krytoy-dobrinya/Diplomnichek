@@ -44,11 +44,17 @@ void AConstructionManager::StartPlacing(UBuildingData* Data)
 
     if (GhostActor)
     {
-        UStaticMeshComponent* Mesh = GhostActor->FindComponentByClass<UStaticMeshComponent>();
-        if (Mesh)
+        GhostActor->SetActorEnableCollision(false);
+
+        TArray<UStaticMeshComponent*> AllMeshes;
+        GhostActor->GetComponents<UStaticMeshComponent>(AllMeshes);
+        for (UStaticMeshComponent* Mesh : AllMeshes)
         {
-            Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-            Mesh->SetMaterial(0, ValidMaterial);
+            if (Mesh)
+            {
+                Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+                Mesh->SetMaterial(0, ValidMaterial);
+            }
         }
     }
 
@@ -84,13 +90,17 @@ void AConstructionManager::UpdateGhostPosition()
 
         GhostActor->SetActorLocation(Pos);
 
-        UStaticMeshComponent* Mesh = GhostActor->FindComponentByClass<UStaticMeshComponent>();
-        if (Mesh)
+        TArray<UStaticMeshComponent*> AllMeshes;
+        GhostActor->GetComponents<UStaticMeshComponent>(AllMeshes);
+        for (UStaticMeshComponent* Mesh : AllMeshes)
         {
-            if (CanPlaceAtLocation(Pos))
-                Mesh->SetMaterial(0, ValidMaterial);
-            else
-                Mesh->SetMaterial(0, InvalidMaterial);
+            if (Mesh)
+            {
+                if (CanPlaceAtLocation(Pos))
+                    Mesh->SetMaterial(0, ValidMaterial);
+                else
+                    Mesh->SetMaterial(0, InvalidMaterial);
+            }
         }
     }
 }
