@@ -46,7 +46,7 @@ public:
 
     // Для отладки
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
-    bool bDebugMode = true;
+    bool bDebugMode = false;
 
 private:
     // Таймер для расхода потребностей (раз в секунду)

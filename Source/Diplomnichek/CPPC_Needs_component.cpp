@@ -72,6 +72,7 @@ void UCPPC_Needs_component::TickComponent(float DeltaTime, ELevelTick TickType,
         UpdateEnergy();
     }
 
+
     if (bDebugMode && GEngine)
     {
         AMyCPP_LightingSourceItemClass* Item = ActiveLightItem.Get();
