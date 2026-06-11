@@ -31,9 +31,6 @@ public:
     int32 CPP_Max_stack_size;
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-    float CPP_Item_value;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     UTexture2D* CPP_Item_image;
     
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Item")

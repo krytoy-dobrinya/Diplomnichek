@@ -23,9 +23,6 @@ class DIPLOMNICHEK_API AMyCPP_ToolItemClass : public ACPP_BaseItemClass
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-    float CPP_Energy_cost;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     ECPP_ToolType CPP_Tool_type;
 
     virtual bool UseItem_Implementation(AActor* User, FVector TargetLocation) override;
