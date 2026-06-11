@@ -21,11 +21,5 @@ public:
 	float CPP_Current_Fuel;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	bool CPP_isOpen;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	bool CPP_isLit;
-
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Light Source")
-    void ifLit();
 };

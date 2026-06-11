@@ -7,13 +7,6 @@
 #include "Engine/Texture2D.h"
 #include "CPP_BaseItemClass.generated.h"
 
-UENUM(BlueprintType)
-enum class ECPP_EquipSlotType : uint8
-{
-    Hat         UMETA(DisplayName = "Hat"),
-    Backpack    UMETA(DisplayName = "Backpack"),
-    Simple      UMETA(DisplayName = "Simple")
-};
 
 
 UCLASS()
@@ -36,9 +29,6 @@ public:
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     int32 CPP_Max_stack_size;
-    
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-    ECPP_EquipSlotType CPP_Equip_slot_type;
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     float CPP_Item_value;
