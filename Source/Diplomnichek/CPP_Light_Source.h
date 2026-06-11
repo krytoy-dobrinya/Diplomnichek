@@ -27,7 +27,7 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Light")
     float LightCollisionHeight = 150.0f;
 
-    // Имитация входа игрока в коллизию (вызывается из компонента при старте)
+    // Имитация входа игрока в коллизию (вызывается из light_system_component при старте)
     void SimulatePlayerEnter(AActor* Player);
 
     // Флаг: игрок внутри коллизии (нужен компоненту для проверки)
@@ -37,7 +37,7 @@ public:
     bool bWasPlayerVisible = false;
 
     // Текущий игрок (нужен компоненту)
-    UPROPERTY()
+    UPROPERTY() // Нужен без параметров для защиты от сборщика мусора
     TWeakObjectPtr<AActor> CurrentPlayer;
 
 private:
@@ -56,7 +56,7 @@ private:
         UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
     UPROPERTY(EditAnywhere, Category = "Debug")
-    bool bShowDebugRay = false;
+    bool bShowDebugRay = false; // Включить для отладочной информации
 
     FVector PlayerLocation;
 };

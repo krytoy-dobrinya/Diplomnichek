@@ -9,6 +9,8 @@ ACPP_Light_Source::ACPP_Light_Source()
     PrimaryActorTick.bCanEverTick = true;
 }
 
+
+// При начале игры
 void ACPP_Light_Source::BeginPlay()
 {
     Super::BeginPlay();
@@ -27,22 +29,25 @@ void ACPP_Light_Source::BeginPlay()
     }
 }
 
+// Создание коллизии, для проверки близости игрока
 void ACPP_Light_Source::CreateLightCollision()
 {
     LightCollision = NewObject<USphereComponent>(this, USphereComponent::StaticClass(), TEXT("LightCollision"));
     LightCollision->RegisterComponent();
     LightCollision->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 
-    LightCollision->SetSphereRadius(LightRadius + 50.0f);
-    LightCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-    LightCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
-    LightCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+    LightCollision->SetSphereRadius(LightRadius + 50.0f);                 // Пол метра запаса
+    LightCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);    // Включить коллизию
+    LightCollision->SetCollisionResponseToAllChannels(ECR_Ignore);        // Включить все каналы коллизии
+    LightCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap); // Что бы реагировало только на Pawn
 
-
+    // Работает, если включен дебаг
     LightCollision->SetVisibility(bShowDebugRay);
     LightCollision->SetHiddenInGame(!bShowDebugRay);
 }
 
+
+// При начале игры делает проверку находится ли игрок уже в коллизии
 void ACPP_Light_Source::SimulatePlayerEnter(AActor* Player)
 {
     if (Player && Player->IsA(ACharacter::StaticClass()))
@@ -53,26 +58,32 @@ void ACPP_Light_Source::SimulatePlayerEnter(AActor* Player)
     }
 }
 
+
+// Выполняется каждый тик (кадр)
 void ACPP_Light_Source::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
+    // Если игрок в радиусе источника света
     if (bIsPlayerInRange && CurrentPlayer.IsValid() && LightCollision)
     {
-        PlayerLocation = CurrentPlayer->GetActorLocation();
+        PlayerLocation = CurrentPlayer->GetActorLocation(); // Где находится игрок
 
-        FVector Start = LightCollision->GetComponentLocation();
+        // Направляет луч на игрока
+        FVector Start = LightCollision->GetComponentLocation(); 
         FVector End = PlayerLocation;
 
+        // Настройки луча: игнорируем себя, используем простую коллизию
         FCollisionQueryParams QueryParams;
         QueryParams.AddIgnoredActor(this);
         QueryParams.bTraceComplex = false;
 
+        // Пускаем луч от источника к игроку по каналу LightTrace (кастомный канал)
         FHitResult HitResult;
         bool bHit = GetWorld()->LineTraceSingleByChannel(
             HitResult, Start, End, ECC_GameTraceChannel1, QueryParams);
 
-        bool bNowVisible = false;
+        bool bNowVisible = false; // Проверяет видит ли луч игрока
         if (bHit)
         {
             bNowVisible = (HitResult.GetActor() == CurrentPlayer.Get());
@@ -82,27 +93,27 @@ void ACPP_Light_Source::Tick(float DeltaTime)
             bNowVisible = true;
         }
 
-        // Смена флага: НЕ касается → КАСАЕТСЯ (+1)
+        // Смена флага: касается
         if (bNowVisible && !bWasPlayerVisible)
         {
             ULight_System_Component* LightComp = CurrentPlayer->FindComponentByClass<ULight_System_Component>();
             if (LightComp)
             {
-                LightComp->IncrementCounter();
+                LightComp->IncrementCounter(); // Прибавляем кол-во источников освещения
             }
         }
-        // Смена флага: КАСАЕТСЯ → НЕ касается (-1)
+        // Смена флага: не касается
         else if (!bNowVisible && bWasPlayerVisible)
         {
             ULight_System_Component* LightComp = CurrentPlayer->FindComponentByClass<ULight_System_Component>();
             if (LightComp)
             {
-                LightComp->DecrementCounter();
+                LightComp->DecrementCounter(); // Вычитаем кол-во источников освещения
             }
         }
         bWasPlayerVisible = bNowVisible;
 
-        // Отладочный луч
+        // Отладочный луч (если включен дебаг)
         if (bShowDebugRay)
         {
             FColor RayColor = bNowVisible ? FColor::Green : FColor::Red;
@@ -119,18 +130,22 @@ void ACPP_Light_Source::Tick(float DeltaTime)
     }
 }
 
+
+// Если игрок вошел в коллизию
 void ACPP_Light_Source::OnPlayerEnter(UPrimitiveComponent* OverlappedComponent,
     AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
     bool bFromSweep, const FHitResult& SweepResult)
 {
-    if (OtherActor && OtherActor->IsA(ACharacter::StaticClass()))
+    if (OtherActor && OtherActor->IsA(ACharacter::StaticClass())) // Получаем позицию игрока для отправки в него луча
     {
         CurrentPlayer = OtherActor;
         bIsPlayerInRange = true;
-        PlayerLocation = OtherActor->GetActorLocation();
+        PlayerLocation = OtherActor->GetActorLocation(); 
     }
 }
 
+
+// Если игрок вышел из коллизии
 void ACPP_Light_Source::OnPlayerExit(UPrimitiveComponent* OverlappedComponent,
     AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
@@ -142,7 +157,7 @@ void ACPP_Light_Source::OnPlayerExit(UPrimitiveComponent* OverlappedComponent,
             ULight_System_Component* LightComp = OtherActor->FindComponentByClass<ULight_System_Component>();
             if (LightComp)
             {
-                LightComp->DecrementCounter();
+                LightComp->DecrementCounter(); // Вычитаем кол-во источников освещения
             }
         }
 

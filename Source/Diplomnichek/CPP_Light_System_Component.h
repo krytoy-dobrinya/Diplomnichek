@@ -25,13 +25,15 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Light System")
     int32 LightCounter = 0;
 
+    // Счетчик безопасных зон
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Light System")
     int32 Safe_Zone = 0;
 
+    // Флаг неуязвимости (когда фонарь горит в руке)
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Light System")
     bool Invincible_flag = false;
 
-    // Сколько секунд до смерти (константа)
+    // Сколько секунд до смерти
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Light System")
     float DeathTimer = 3.0f;
 
@@ -67,6 +69,7 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Light System")
     void CheckAllLightSourcesAtStart();
 
+    // Обновление состояние смерти после респавна
     UFUNCTION(BlueprintCallable, Category = "Light System")
     void ResetDeathState();
 

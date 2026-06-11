@@ -32,7 +32,7 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Needs")
     TWeakObjectPtr<AMyCPP_LightingSourceItemClass> ActiveLightItem;
 
-    // Скорость изменения тепла (ед/сек)
+    // Скорость изменения тепла в секунду
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Needs")
     float WarmthRate = 0.1f;
 
