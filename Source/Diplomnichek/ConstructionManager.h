@@ -30,7 +30,7 @@ public:
     UBuildingData* CurrentBuildingData;
 
     // Building ghost
-    UPROPERTY()
+    UPROPERTY(BlueprintReadOnly)
     AActor* GhostActor;
 
     // Materials
@@ -56,9 +56,11 @@ public:
     FVector OriginalCameraTransform;
     FRotator OriginalCameraRotation;
 
+    UFUNCTION(BlueprintCallable, Category = "Building")
+    bool CanPlaceAtLocation(FVector Location) const;
+
 protected:
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaTime) override;
     void UpdateGhostPosition();
-    bool CanPlaceAtLocation(FVector Location) const;
 };
