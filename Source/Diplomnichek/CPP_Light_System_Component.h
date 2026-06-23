@@ -52,7 +52,7 @@ public:
     // Событие: игрок умер
     void OnPlayerDied();
 
-    // Функция для пересчёта счётчика
+  // Вывод в логи (для отладки)
     UFUNCTION(BlueprintCallable, Category = "Light System")
     void RecalculateLightCounter();
 
